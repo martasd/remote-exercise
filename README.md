@@ -60,12 +60,25 @@ To save you some setup time we prepared this repo with a phoenix app that you ca
 - Open a Pull Request in this repo and send the link to [code_exercise@remote.com](mailto:code_exercise@remote.com).
 - You can also send some feedback about this exercise. Was it too big/short? Boring? Let us know!
 
-## To start your Phoenix server
+---
+
+## How to run the existing application
+
+You will need the following installed:
+
+- Elixir >= 1.14
+- Postgres >= 14.5
+
+Check out the `.tool-versions` file for a concrete version combination we ran the application with. Using [asdf](https://github.com/asdf-vm/asdf) you could install their plugins and them via `asdf install`.
+
+### To start your Phoenix server
 
 - Run `mix setup` to install, setup dependencies and setup the database
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+
+---
 
 ## Implementation details
 
