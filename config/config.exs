@@ -8,7 +8,8 @@
 import Config
 
 config :be_exercise,
-  ecto_repos: [BeExercise.Repo]
+  ecto_repos: [BeExercise.Repo],
+  generators: [binary_id: true]
 
 # Configures the endpoint
 config :be_exercise, BeExerciseWeb.Endpoint,
