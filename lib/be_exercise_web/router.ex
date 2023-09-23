@@ -2,22 +2,23 @@ defmodule BeExerciseWeb.Router do
   use BeExerciseWeb, :router
 
   pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, {BeExerciseWeb.Layouts, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:put_root_layout, {BeExerciseWeb.Layouts, :root})
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
   scope "/", BeExerciseWeb do
-    pipe_through :api
+    pipe_through(:api)
 
-    get "/", PageController, :ping
+    get("/", PageController, :ping)
+    resources("/users", UserController, except: [:new, :edit])
   end
 
   # Other scopes may use custom stacks.
@@ -35,9 +36,9 @@ defmodule BeExerciseWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
-      pipe_through :browser
+      pipe_through(:browser)
 
-      live_dashboard "/dashboard", metrics: BeExerciseWeb.Telemetry
+      live_dashboard("/dashboard", metrics: BeExerciseWeb.Telemetry)
     end
   end
 end
