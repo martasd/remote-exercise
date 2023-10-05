@@ -4,10 +4,10 @@ defmodule BeExerciseWeb.UserController do
   alias BeExercise.Payroll
   alias BeExercise.Payroll.User
 
-  action_fallback BeExerciseWeb.FallbackController
+  action_fallback(BeExerciseWeb.FallbackController)
 
-  def index(conn, _params) do
-    users = Payroll.list_users()
+  def index(conn, params) do
+    users = Payroll.list_users(params)
     render(conn, :index, users: users)
   end
 

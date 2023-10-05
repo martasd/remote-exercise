@@ -9,18 +9,21 @@ defmodule BeExercise.Payroll do
   alias BeExercise.Payroll.User
 
   @doc """
-  Returns the list of users.
-
-  ## Examples
-
-      iex> list_users()
-      [%User{}, ...]
+  Returns the list of users ordered by name. Supports partial filtering by name.
 
   """
-  def list_users do
+  def list_users(filters \\ %{}) do
     User
+    |> filter_by_name(filters["name"])
     |> order_by(asc: :name)
     |> Repo.all()
+  end
+
+  defp filter_by_name(query, nil), do: query
+
+  defp filter_by_name(query, name) do
+    # TODO: Sanitize the like query
+    from(u in query, where: ilike(u.name, ^"%#{name}%"))
   end
 
   @doc """
