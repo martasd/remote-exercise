@@ -18,7 +18,9 @@ defmodule BeExercise.Payroll do
 
   """
   def list_users do
-    Repo.all(User)
+    User
+    |> order_by(asc: :name)
+    |> Repo.all()
   end
 
   @doc """
