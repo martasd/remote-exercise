@@ -4,6 +4,7 @@ defmodule BeExercise.Payroll do
   """
 
   import Ecto.Query, warn: false
+  alias BeExercise.Payroll.Salary
   alias BeExercise.Repo
 
   alias BeExercise.Payroll.User
@@ -44,20 +45,11 @@ defmodule BeExercise.Payroll do
 
   @doc """
   Creates a user.
-
-  ## Examples
-
-      iex> create_user(%{field: value})
-      {:ok, %User{}}
-
-      iex> create_user(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
-  def create_user(attrs \\ %{}) do
+  def create_user!(attrs \\ %{}) do
     %User{}
     |> User.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert!()
   end
 
   @doc """
@@ -105,5 +97,14 @@ defmodule BeExercise.Payroll do
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
+  end
+
+  @doc """
+  Creates a salary.
+  """
+  def create_salary!(attrs \\ %{}) do
+    %Salary{}
+    |> Salary.changeset(attrs)
+    |> Repo.insert!()
   end
 end
