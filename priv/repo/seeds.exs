@@ -1,28 +1,47 @@
 # Seed the database with 20_000 users, each with two salaries
 
 alias BeExercise.Payroll
+alias BeExercise.Payroll.User
+alias Faker.Person
 
-num_users = 20_000
-max = 1_000_000
-currencies = Ecto.Enum.values(Payroll.Salary, :currency)
-now = DateTime.utc_now()
+require Logger
 
-Enum.each(1..num_users, fn _i ->
-  name = Faker.Person.first_name()
-  user = Payroll.create_user!(%{name: name})
+defmodule SeedDatabase do
+  @max 1_000_000
+  @currencies Ecto.Enum.values(Payroll.Salary, :currency)
+  @now DateTime.utc_now()
 
-  Payroll.create_salary!(%{
-    amount: :rand.uniform(max),
-    currency: Enum.random(currencies),
-    last_active: DateTime.add(now, -(:rand.uniform(max)))
-    user_id: user.id
-  })
+  def seed_users(num_users) when num_users == 20_000 do
+    Logger.info("Seeded the database with 20k users.")
+  end
 
-  Payroll.create_salary!(%{
-    amount: :rand.uniform(max),
-    currency: Enum.random(currencies),
-    last_active: DateTime.add(now, -(:rand.uniform(max)))
-    user_id: user.id
-  })
+  def seed_users(num_users) do
+    name = "#{Person.first_name()} #{Person.last_name()}"
 
-end)
+    case Payroll.create_user(%{name: name}) do
+      {:ok, %User{} = user} ->
+        Payroll.create_salary(%{
+          amount: :rand.uniform(@max),
+          currency: Enum.random(@currencies),
+          active: false,
+          last_active: DateTime.add(@now, -:rand.uniform(@max)),
+          user_id: user.id
+        })
+
+        Payroll.create_salary(%{
+          amount: :rand.uniform(@max),
+          currency: Enum.random(@currencies),
+          active: Enum.random([true, false]),
+          last_active: DateTime.add(@now, -:rand.uniform(@max)),
+          user_id: user.id
+        })
+
+        seed_users(num_users + 1)
+
+      {:error, _} ->
+        seed_users(num_users)
+    end
+  end
+end
+
+SeedDatabase.seed_users(0)
