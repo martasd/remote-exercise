@@ -7,9 +7,10 @@ defmodule BeExercise.Payroll.User do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users" do
-    field :name, :string
+    field(:name, :string)
 
-    has_many :salaries, Salary
+    has_one(:salary, Salary, where: [active: true])
+    has_many(:salaries, Salary)
 
     timestamps()
   end
@@ -19,5 +20,6 @@ defmodule BeExercise.Payroll.User do
     user
     |> cast(attrs, [:name])
     |> validate_required([:name])
+    |> unique_constraint([:name])
   end
 end

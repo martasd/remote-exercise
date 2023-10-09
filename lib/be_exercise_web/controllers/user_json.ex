@@ -1,4 +1,5 @@
 defmodule BeExerciseWeb.UserJSON do
+  alias BeExercise.Payroll.Salary
   alias BeExercise.Payroll.User
 
   @doc """
@@ -17,8 +18,18 @@ defmodule BeExerciseWeb.UserJSON do
 
   defp data(%User{} = user) do
     %{
-      id: user.id,
-      name: user.name
+      name: user.name,
+      salary: show_salary(user.salary)
+    }
+  end
+
+  defp show_salary(nil), do: "no active salary found"
+
+  defp show_salary(%Salary{} = salary) do
+    %{
+      amount: salary.amount,
+      currency: salary.currency,
+      active: salary.active
     }
   end
 end

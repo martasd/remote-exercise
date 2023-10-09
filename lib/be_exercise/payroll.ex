@@ -18,6 +18,7 @@ defmodule BeExercise.Payroll do
     User
     |> filter_by_name(filters["name"])
     |> order_by(asc: :name)
+    |> preload(:salary)
     |> Repo.all()
   end
 
@@ -77,6 +78,12 @@ defmodule BeExercise.Payroll do
     |> Repo.insert!()
   end
 
+  def create_user(attrs \\ %{}) do
+    %User{}
+    |> User.changeset(attrs)
+    |> Repo.insert()
+  end
+
   @doc """
   Updates a user.
 
@@ -127,7 +134,7 @@ defmodule BeExercise.Payroll do
   @doc """
   Creates a salary.
   """
-  def create_salary!(attrs \\ %{}) do
+  def create_salary(attrs \\ %{}) do
     %Salary{}
     |> Salary.changeset(attrs)
     |> Repo.insert!()
