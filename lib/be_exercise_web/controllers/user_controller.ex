@@ -11,6 +11,12 @@ defmodule BeExerciseWeb.UserController do
     render(conn, :index, users: users)
   end
 
+  def invite(conn, _params) do
+    with {:ok, num_invited} <- Payroll.invite_users() do
+      json(conn, %{data: "Invited #{num_invited} users."})
+    end
+  end
+
   def create(conn, %{"user" => user_params}) do
     with %User{} = user <- Payroll.create_user!(user_params) do
       conn

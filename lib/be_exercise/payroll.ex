@@ -2,17 +2,18 @@ defmodule BeExercise.Payroll do
   @moduledoc """
   The Payroll context.
   """
-
   import Ecto.Query, warn: false
+
   alias BeExercise.Payroll.Salary
+  alias BeExercise.Payroll.User
   alias BeExercise.Repo
 
-  alias BeExercise.Payroll.User
+  require Logger
 
   @doc """
   Returns the list of users ordered by name. Supports partial filtering by name.
-
   """
+  @spec list_users(%{name: String.t()} | %{}) :: [%User{}]
   def list_users(filters \\ %{}) do
     User
     |> filter_by_name(filters["name"])
@@ -25,6 +26,30 @@ defmodule BeExercise.Payroll do
   defp filter_by_name(query, name) do
     # TODO: Sanitize the like query
     from(u in query, where: ilike(u.name, ^"%#{name}%"))
+  end
+
+  @doc """
+  Invite all users with an active salary by sending an email.
+  """
+  @spec invite_users() :: {:ok, integer()}
+  def invite_users() do
+    Repo.transaction(
+      fn ->
+        User
+        |> Repo.stream()
+        |> Enum.reduce(0, fn %User{name: name}, num_invited ->
+          case BEChallengex.send_email(%{name: name}) do
+            {:error, msg} ->
+              Logger.error("Could not send email to user #{name}. Reason: #{msg}")
+              num_invited
+
+            {:ok, _name} ->
+              num_invited + 1
+          end
+        end)
+      end,
+      timeout: :infinity
+    )
   end
 
   @doc """
