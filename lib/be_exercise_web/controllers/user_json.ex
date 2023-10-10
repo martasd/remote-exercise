@@ -1,6 +1,9 @@
 defmodule BeExerciseWeb.UserJSON do
+  import Ecto.Query, only: [where: 2, last: 2]
+
   alias BeExercise.Payroll.Salary
   alias BeExercise.Payroll.User
+  alias BeExercise.Repo
 
   @doc """
   Renders a list of users.
@@ -16,14 +19,27 @@ defmodule BeExerciseWeb.UserJSON do
     %{data: data(user)}
   end
 
+  # Show user's active salary. If no active salary found, show user's most recently active one.
   defp data(%User{} = user) do
+    salary =
+      case user.salary do
+        %Salary{} = salary ->
+          salary
+
+        nil ->
+          Salary
+          |> where(user_id: ^user.id)
+          |> last(:last_active)
+          |> Repo.one()
+      end
+
     %{
       name: user.name,
-      salary: show_salary(user.salary)
+      salary: show_salary(salary)
     }
   end
 
-  defp show_salary(nil), do: "no active salary found"
+  defp show_salary(nil), do: "no salary found"
 
   defp show_salary(%Salary{} = salary) do
     %{
