@@ -18,7 +18,7 @@ defmodule BeExerciseWeb.UserControllerTest do
       assert json_response(conn, 200)["data"] == []
     end
 
-    test "lists all created users with their active salaries ordered by name", %{conn: conn} do
+    test "lists all users with their salaries ordered by users' name", %{conn: conn} do
       abe = user_fixture(%{name: "abe"})
       bill = user_fixture(%{name: "bill"})
       carl = user_fixture(%{name: "carl"})
@@ -36,12 +36,20 @@ defmodule BeExerciseWeb.UserControllerTest do
       })
 
       salary_fixture(carl, %{
+        amount: 600,
+        currency: :usd,
+        active: false,
+        last_active: ~U[2023-10-09 02:30:00Z]
+      })
+
+      salary_fixture(carl, %{
         amount: 400,
         currency: :usd,
         active: false,
         last_active: ~U[2023-10-11 02:30:00Z]
       })
 
+      # Most recently active salary
       salary_fixture(carl, %{
         amount: 500,
         currency: :eur,
@@ -104,10 +112,12 @@ defmodule BeExerciseWeb.UserControllerTest do
       john = user_fixture(%{name: "john"})
       josh = user_fixture(%{name: "josh"})
       jack = user_fixture(%{name: "jack"})
+      _jim = user_fixture(%{name: "jim"})
 
       salary_fixture(john, %{amount: 100, currency: :gbp})
       salary_fixture(josh, %{amount: 200, currency: :eur})
-      salary_fixture(jack, %{amount: 300, currency: :eur, active: false})
+      salary_fixture(josh, %{amount: 300, currency: :jpy, active: false})
+      salary_fixture(jack, %{amount: 400, currency: :eur, active: false})
 
       conn = post(conn, ~p"/invite-users")
       assert json_response(conn, 200)["data"] == "Invited 2 users."
