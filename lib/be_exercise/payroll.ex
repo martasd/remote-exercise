@@ -37,6 +37,8 @@ defmodule BeExercise.Payroll do
     Repo.transaction(
       fn ->
         User
+        |> join(:left, [u], s in assoc(u, :salaries))
+        |> where([u, s], s.active)
         |> Repo.stream()
         |> Enum.reduce(0, fn %User{name: name}, num_invited ->
           case BEChallengex.send_email(%{name: name}) do
@@ -72,12 +74,6 @@ defmodule BeExercise.Payroll do
   @doc """
   Creates a user.
   """
-  def create_user!(attrs \\ %{}) do
-    %User{}
-    |> User.changeset(attrs)
-    |> Repo.insert!()
-  end
-
   def create_user(attrs \\ %{}) do
     %User{}
     |> User.changeset(attrs)
@@ -137,6 +133,6 @@ defmodule BeExercise.Payroll do
   def create_salary(attrs \\ %{}) do
     %Salary{}
     |> Salary.changeset(attrs)
-    |> Repo.insert!()
+    |> Repo.insert()
   end
 end
