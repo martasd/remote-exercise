@@ -3,6 +3,7 @@ defmodule BeExercise.PayrollFixtures do
   This module defines test helpers for creating
   entities via the `BeExercise.Payroll` context.
   """
+  alias BeExercise.Payroll
 
   @doc """
   Generate a user.
@@ -11,10 +12,27 @@ defmodule BeExercise.PayrollFixtures do
     {:ok, user} =
       attrs
       |> Enum.into(%{
-        name: "some name"
+        name: "John Doe"
       })
-      |> BeExercise.Payroll.create_user()
+      |> Payroll.create_user()
 
     user
+  end
+
+  @doc """
+  Generate a salary.
+  """
+  def salary_fixture(user, attrs \\ %{}) do
+    {:ok, salary} =
+      attrs
+      |> Enum.into(%{
+        amount: 42,
+        currency: :czk,
+        active: true,
+        user_id: user.id
+      })
+      |> Payroll.create_salary()
+
+    salary
   end
 end
