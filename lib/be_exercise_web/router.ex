@@ -17,7 +17,7 @@ defmodule BeExerciseWeb.Router do
   scope "/", BeExerciseWeb do
     pipe_through(:api)
 
-    resources("/users", UserController, except: [:new, :edit])
+    get("/users", UserController, :index)
     post("/invite-users", UserController, :invite)
   end
 
