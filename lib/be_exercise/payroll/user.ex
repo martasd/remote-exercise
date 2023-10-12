@@ -17,6 +17,7 @@ defmodule BeExercise.Payroll.User do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+  @timestamps_opts [type: :utc_datetime_usec]
   schema "users" do
     field(:name, :string)
 

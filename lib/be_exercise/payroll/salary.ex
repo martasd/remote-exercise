@@ -6,6 +6,7 @@ defmodule BeExercise.Payroll.Salary do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+  @timestamps_opts [type: :utc_datetime_usec]
   schema "salaries" do
     field(:amount, :integer)
     field(:currency, Ecto.Enum, values: [:czk, :usd, :eur, :gbp, :jpy])
