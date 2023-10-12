@@ -4,6 +4,17 @@ defmodule BeExercise.Payroll.User do
 
   alias BeExercise.Payroll.Salary
 
+  @derive {
+    Flop.Schema,
+    filterable: [:name],
+    sortable: [:name, :inserted_at],
+    pagination_types: [:page],
+    default_order: %{
+      order_by: [:inserted_at],
+      order_directions: [:asc]
+    }
+  }
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users" do

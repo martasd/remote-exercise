@@ -13,20 +13,30 @@ defmodule BeExercise.Payroll do
   @doc """
   Returns the list of users ordered by name. Supports partial filtering by name.
   """
-  @spec list_users(%{name: String.t()} | %{}) :: [%User{}]
-  def list_users(filters \\ %{}) do
-    User
-    |> filter_by_name(filters["name"])
-    |> order_by(asc: :name)
-    |> preload(:salary)
-    |> Repo.all()
+  @spec list_users(%{name: String.t()} | %{}) ::
+          {:ok, [%User{}]} | {:params_errors, [{atom(), term()}]}
+  def list_users(params) do
+    user_query = preload(User, :salary)
+    params = parse_params(params)
+
+    case Flop.validate_and_run(user_query, params, for: BeExercise.Payroll.User) do
+      {:ok, {users, _meta}} ->
+        {:ok, users}
+
+      {:error, meta} ->
+        {:params_errors, meta.errors}
+    end
   end
 
-  defp filter_by_name(query, nil), do: query
+  # Parse the name filter from params
+  defp parse_params(params) do
+    case Map.pop(params, "name") do
+      {nil, params} ->
+        params
 
-  defp filter_by_name(query, name) do
-    # TODO: Sanitize the like query
-    from(u in query, where: ilike(u.name, ^"%#{name}%"))
+      {name, params} ->
+        Map.put(params, "filters", [%{"field" => "name", "op" => "ilike", "value" => name}])
+    end
   end
 
   @doc """

@@ -6,8 +6,9 @@ defmodule BeExerciseWeb.UserController do
   action_fallback(BeExerciseWeb.FallbackController)
 
   def index(conn, params) do
-    users = Payroll.list_users(params)
-    render(conn, :index, users: users)
+    with {:ok, users} <- Payroll.list_users(params) do
+      render(conn, :index, users: users)
+    end
   end
 
   def invite(conn, _params) do
