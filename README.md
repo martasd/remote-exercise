@@ -120,7 +120,7 @@ From the task description it was clear that we need to schemas: `users` and `sal
 
 ### Seeding the database
 
-I found that BEChallengex contains a list of 646 names. Since I needed to seed the database with 20k unique users, I opted to use `Faker` library which has a longer list of first names and last names which can be combined to form a unique full name. The seeding function `seed_users/1` stops only when 20_000 unique users are created.
+I found that BEChallengex contains a list of 646 names. Since I needed to seed the database with 20k unique users, I opted to use `Faker` library which has a longer list of first names and last names which can be combined to form a unique full name. The seeding function `seed_users/1` stops only when 20 000 unique users are created.
 
 ### API
 
@@ -134,4 +134,4 @@ To aid the performance of the queries, I've created database indexes: unique ind
 
 #### Inviting users
 
-Since the users table can be very large, I used `Repo.stream/1` for retrieving active users to avoid performance issues. When done, the endpoint returns the number of invited users.
+Since the users table can be very large, I used `Repo.stream/1` to retrieve user records lazily. Since sending an email can be executed independently for each user, we can take advantage of Elixir's concurrency here. Compared to sequential approach, using `Task.async_stream/3` sped up the query execution for 19 966 invited users from about 34 s to about 5s. 💪

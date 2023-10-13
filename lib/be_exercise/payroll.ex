@@ -44,25 +44,23 @@ defmodule BeExercise.Payroll do
   """
   @spec invite_users() :: {:ok, integer()}
   def invite_users() do
-    Repo.transaction(
-      fn ->
-        User
-        |> join(:left, [u], s in assoc(u, :salaries))
-        |> where([u, s], s.active)
-        |> Repo.stream()
-        |> Enum.reduce(0, fn %User{name: name}, num_invited ->
-          case BEChallengex.send_email(%{name: name}) do
-            {:error, msg} ->
-              Logger.error("Could not send email to user #{name}. Reason: #{msg}")
-              num_invited
+    Repo.transaction(fn ->
+      User
+      |> join(:left, [u], s in assoc(u, :salaries))
+      |> where([u, s], s.active)
+      |> Repo.stream()
+      |> Task.async_stream(fn %User{name: name} ->
+        case BEChallengex.send_email(%{name: name}) do
+          {:error, msg} ->
+            Logger.error("Could not send email to user #{name}. Reason: #{msg}")
+            0
 
-            {:ok, _name} ->
-              num_invited + 1
-          end
-        end)
-      end,
-      timeout: 60_000
-    )
+          {:ok, _name} ->
+            1
+        end
+      end)
+      |> Enum.reduce(0, fn {:ok, num}, acc -> num + acc end)
+    end)
   end
 
   @doc """
