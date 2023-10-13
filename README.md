@@ -112,8 +112,8 @@ To run the user controller tests, execute
 
 ### Schema
 
-From the task description it was clear that we need to schemas: `users` and `salaries`.
-* For the salary `amount` I used integer type to avoid rounding issues caused by floating point arithmetic.
+From the task description it was clear that we need two schemas: `users` and `salaries`.
+* For the salary `amount` field I used integer type to avoid rounding issues caused by floating point arithmetic.
 * When a user is offboarded, all her salaries are inactive and we need to be able to return the most recently active one. To do so, I added the timestamp field `last_active`, which I assume is set when an active salary gets deactivated.
 * A user `has_many` salaries and thus each salary `belongs_to` a user. Besides that, each user `has_one` salary which is active. An offboarded user's `salary` field is `nil` since all her salaries are inactive.
 * To invite a user, we need to uniquely identify a user by her name, so we use unique constraint on the `name` field.
@@ -124,14 +124,17 @@ I found that BEChallengex contains a list of 646 names. Since I needed to seed t
 
 ### API
 
-#### Getting users with salaries
+#### Listing users with salaries (`GET /users`)
 
 Here we need to check whether a user has an active salary. If so, we return it. Otherwise, we run a query to retrieve the most recently active salary. When a user has no salary at all, we print an informative message.
 
-By default, the endpoint returns all users ordered ascendingly by `inserted_at` timestamp. They can be filtered by partial name and ordered by name. Initially, I implemented my own filtering and ordering. Since we rarely want to query all users in the real world, I used the excellent `Flop` library to enable paginating the query results.  `Flop` supports filtering and sorting as well with intuitive configuration, so I decided to take advantage of that to allow for more flexibility in adding filtering and ordering for other fields in the future.
+By default, the endpoint returns all users ordered ascendingly by `inserted_at` timestamp. They can be filtered by partial name and ordered by name. Initially, I implemented my own filtering and ordering. Since we rarely want to query all users in the real world, I used the excellent `Flop` library to enable paginating the query results.  `Flop` supports filtering and sorting as well with intuitive configuration, so I decided to take advantage of it replacing my own implementation, which allows for more flexibility in adding filtering and ordering for additional fields in the future.
 
-To aid the performance of the queries, I've created database indexes: unique index on users' name field, index on salaries' `user_id` foreign key and finally partial unique index on user's active salary, which forces the constraint that at most one active salary can exist for each user.
+To aid the performance of the queries, I've created the following database indexes:
+* unique index on users' `name` field
+* index on salaries' `user_id` foreign key
+* partial unique index on user's active `salary`, which enforces the constraint that at most one active salary can exist for each user
 
-#### Inviting users
+#### Inviting users (`POST /invite-users`)
 
-Since the users table can be very large, I used `Repo.stream/1` to retrieve user records lazily. Since sending an email can be executed independently for each user, we can take advantage of Elixir's concurrency here. Compared to sequential approach, using `Task.async_stream/3` sped up the query execution for 19 966 invited users from about 34 s to about 5s. 💪
+Since the users table can be very large, I used `Repo.stream/1` to retrieve user records lazily. Furthermore, sending an email can be executed independently for each user, so we can take advantage of Elixir's concurrency here. Compared to sequential approach, using `Task.async_stream/3` sped up the query execution for 19 966 invited users from about 34s to about 5s. 💪
