@@ -14,7 +14,7 @@ defmodule BeExercise.Payroll do
   Returns the list of users ordered by name. Supports partial filtering by name.
   """
   @spec list_users(%{name: String.t()} | %{}) ::
-          {:ok, [%User{}]} | {:params_errors, [{atom(), term()}]}
+          {:ok, [User.t()]} | {:params_errors, [{atom(), term()}]}
   def list_users(params) do
     user_query = preload(User, :salary)
     params = parse_params(params)

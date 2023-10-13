@@ -1,4 +1,6 @@
 defmodule BeExercise.Payroll.User do
+  @moduledoc false
+
   use Ecto.Schema
   import Ecto.Changeset
 
