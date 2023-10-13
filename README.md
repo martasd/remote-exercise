@@ -78,8 +78,60 @@ Check out the `.tool-versions` file for a concrete version combination we ran th
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
----
+
+## How to execute queries
+
+* List all users
+
+      curl -i "http://localhost:4000/users"
+
+* List all users whose name contains "smith" and order them alphabetically by full name
+
+      curl -i "http://localhost:4000/users?name=smith&order_by[]=name"
+
+* List the first ten users
+
+      curl -i "http://localhost:4000/users?page_size=10&page=1"
+
+* Invite all active users
+
+      curl -i -X POST "http://localhost:4000/invite-users"
+
+
+## How to test
+
+All tests can be executed by running
+
+      mix test
+
+To run the user controller tests, execute
+
+      mix test test/be_exercise_web/controllers/user_controller_test.exs
 
 ## Implementation details
 
-This section is for you to fill in with any decisions you made that may be relevant. You can also change this README to fit your needs.
+### Schema
+
+From the task description it was clear that we need to schemas: `users` and `salaries`.
+* For the salary `amount` I used integer type to avoid rounding issues caused by floating point arithmetic.
+* When a user is offboarded, all her salaries are inactive and we need to be able to return the most recently active one. To do so, I added the timestamp field `last_active`, which I assume is set when an active salary gets deactivated.
+* A user `has_many` salaries and thus each salary `belongs_to` a user. Besides that, each user `has_one` salary which is active. An offboarded user's `salary` field is `nil` since all her salaries are inactive.
+* To invite a user, we need to uniquely identify a user by her name, so we use unique constraint on the `name` field.
+
+### Seeding the database
+
+I found that BEChallengex contains a list of 646 names. Since I needed to seed the database with 20k unique users, I opted to use `Faker` library which has a longer list of first names and last names which can be combined to form a unique full name. The seeding function `seed_users/1` stops only when 20_000 unique users are created.
+
+### API
+
+#### Getting users with salaries
+
+Here we need to check whether a user has an active salary. If so, we return it. Otherwise, we run a query to retrieve the most recently active salary. When a user has no salary at all, we print an informative message.
+
+By default, the endpoint returns all users ordered ascendingly by `inserted_at` timestamp. They can be filtered by partial name and ordered by name. Initially, I implemented my own filtering and ordering. Since we rarely want to query all users in the real world, I used the excellent `Flop` library to enable paginating the query results.  `Flop` supports filtering and sorting as well with intuitive configuration, so I decided to take advantage of that to allow for more flexibility in adding filtering and ordering for other fields in the future.
+
+To aid the performance of the queries, I've created database indexes: unique index on users' name field, index on salaries' `user_id` foreign key and finally partial unique index on user's active salary, which forces the constraint that at most one active salary can exist for each user.
+
+#### Inviting users
+
+Since the users table can be very large, I used `Repo.stream/1` for retrieving active users to avoid performance issues. When done, the endpoint returns the number of invited users.

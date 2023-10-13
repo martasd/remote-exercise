@@ -61,7 +61,7 @@ defmodule BeExercise.Payroll do
           end
         end)
       end,
-      timeout: :infinity
+      timeout: 60_000
     )
   end
 

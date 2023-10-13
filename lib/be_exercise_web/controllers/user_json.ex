@@ -19,7 +19,7 @@ defmodule BeExerciseWeb.UserJSON do
     %{data: data(user)}
   end
 
-  # Show user's active salary. If no active salary found, show user's most recently active one.
+  # Show user's name and active salary. If no active salary found, show user's most recently active one.
   defp data(%User{} = user) do
     salary =
       case user.salary do
