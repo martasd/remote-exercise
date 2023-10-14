@@ -1,12 +1,14 @@
-# Seed the database with 20_000 users, each with two salaries
-
-alias BeExercise.Payroll
-alias BeExercise.Payroll.User
-alias Faker.Person
-
-require Logger
-
 defmodule SeedDatabase do
+  @moduledoc """
+  Seed the database with 20 000 users, each with two salaries.
+  """
+
+  alias BeExercise.Payroll
+  alias BeExercise.Payroll.User
+  alias Faker.Person
+
+  require Logger
+
   @max 1_000_000
   @currencies Ecto.Enum.values(Payroll.Salary, :currency)
   @now DateTime.utc_now()
