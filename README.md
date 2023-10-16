@@ -76,9 +76,6 @@ Check out the `.tool-versions` file for a concrete version combination we ran th
 - Run `mix setup` to install, setup dependencies and setup the database
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-
 ## How to execute queries
 
 * List all users
