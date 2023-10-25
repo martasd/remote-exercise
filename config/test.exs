@@ -11,7 +11,8 @@ config :be_exercise, BeExercise.Repo,
   hostname: "localhost",
   database: "be_exercise_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: 10
+  pool_size: 10,
+  migration_timestamps: [type: :utc_datetime_usec]
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.

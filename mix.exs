@@ -32,6 +32,7 @@ defmodule BeExercise.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:phoenix, "~> 1.7.2"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
@@ -45,7 +46,9 @@ defmodule BeExercise.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:be_challengex, github: "remotecom/be_challengex", tag: "0.0.1"}
+      {:be_challengex, github: "remotecom/be_challengex", tag: "0.0.1"},
+      {:faker, "~> 0.17", only: [:dev, :test]},
+      {:flop, "~> 0.22.1"}
     ]
   end
 

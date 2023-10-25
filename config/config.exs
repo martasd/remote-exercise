@@ -8,7 +8,8 @@
 import Config
 
 config :be_exercise,
-  ecto_repos: [BeExercise.Repo]
+  ecto_repos: [BeExercise.Repo],
+  generators: [binary_id: true]
 
 # Configures the endpoint
 config :be_exercise, BeExerciseWeb.Endpoint,
@@ -27,6 +28,8 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+config :flop, repo: BeExercise.Repo
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

@@ -1,11 +1,49 @@
-# Script for populating the database. You can run it as:
-#
-#     mix run priv/repo/seeds.exs
-#
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     BeExercise.Repo.insert!(%BeExercise.SomeSchema{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
+defmodule SeedDatabase do
+  @moduledoc """
+  Seed the database with 20 000 users, each with two salaries.
+  """
+
+  alias BeExercise.Payroll
+  alias BeExercise.Payroll.User
+  alias Faker.Person
+
+  require Logger
+
+  @max 1_000_000
+  @currencies Ecto.Enum.values(Payroll.Salary, :currency)
+  @now DateTime.utc_now()
+
+  def seed_users(num_users) when num_users == 20_000 do
+    Logger.info("Seeded the database with 20k users.")
+  end
+
+  def seed_users(num_users) do
+    name = "#{Person.first_name()} #{Person.last_name()}"
+
+    case Payroll.create_user(%{name: name}) do
+      {:ok, %User{} = user} ->
+        Payroll.create_salary(%{
+          amount: :rand.uniform(@max),
+          currency: Enum.random(@currencies),
+          active: false,
+          last_active: DateTime.add(@now, -:rand.uniform(@max)),
+          user_id: user.id
+        })
+
+        Payroll.create_salary(%{
+          amount: :rand.uniform(@max),
+          currency: Enum.random(@currencies),
+          active: Enum.random([true, false]),
+          last_active: DateTime.add(@now, -:rand.uniform(@max)),
+          user_id: user.id
+        })
+
+        seed_users(num_users + 1)
+
+      {:error, _} ->
+        seed_users(num_users)
+    end
+  end
+end
+
+SeedDatabase.seed_users(0)
