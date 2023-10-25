@@ -80,4 +80,17 @@ defmodule BeExercise.Payroll do
     |> Salary.changeset(attrs)
     |> Repo.insert()
   end
+
+  def get_user_salary(%User{} = user) do
+    case user.salary do
+      %Salary{} = salary ->
+        salary
+
+      nil ->
+        Salary
+        |> where(user_id: ^user.id)
+        |> last(:last_active)
+        |> Repo.one()
+    end
+  end
 end
